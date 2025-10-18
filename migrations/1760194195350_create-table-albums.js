@@ -22,6 +22,14 @@ export const up = (pgm) => {
         year: {
             type: 'INTEGER',
             notNull: true
+        },
+        created_at: {
+            type: 'STRING',
+            notNull: true
+        },
+        updated_at: {
+            type: 'STRING',
+            notNull: true
         }
     })
 };

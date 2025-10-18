@@ -39,6 +39,14 @@ export const up = (pgm) => {
             notNull: false,
             references: 'albums',
             onDelete: 'CASCADE'
+        },
+        created_at: {
+            type: 'STRING',
+            notNull: true
+        },
+        updated_at: {
+            type: 'STRING',
+            notNull: true
         }
     })
 };
