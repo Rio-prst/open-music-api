@@ -5,7 +5,7 @@ const NotFoundError = require('../../exceptions/NotFound.js');
 const {mapSongDBToModel} = require('../../utils/index.js');
 
 
-class SongsServices {
+class SongsService {
     constructor() {
         this._pool = new Pool();
     }
@@ -49,11 +49,11 @@ class SongsServices {
         return result.rows.map(mapSongDBToModel)[0];
     }
 
-    async editSongsById(id, {title, year, genre, performer, duration, albumId}) {
+    async editSongById(id, {title, year, genre, performer, duration, albumId}) {
         const updatedAt = new Date().toISOString();
         
         const query = {
-            tesxt: 'UPDATE songs SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, albumId = $6, id = $7 RETURNING id',
+            text: 'UPDATE songs SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, "albumId" = $6, updated_at = $7 WHERE id = $8 RETURNING id',
             values: [title, year, genre, performer, duration, albumId, updatedAt, id]
         };
 
@@ -66,9 +66,11 @@ class SongsServices {
 
     async deleteSongById(id) {
         const query = {
-            text: 'DELETE FROM songs WHERE id = $1',
+            text: 'DELETE FROM songs WHERE id = $1 RETURNING id',
             values: [id]
         };
+
+        const result = await this._pool.query(query);
 
         if (!result.rows.length) {
             throw new NotFoundError('Gagal menghapus lagu. Id tidak ditemukan');
@@ -76,4 +78,4 @@ class SongsServices {
     }
 }
 
-module.exports = SongsServices;
+module.exports = SongsService;

@@ -9,7 +9,7 @@ const mapAlbumsDBToModel = ({
     name, 
     year,
     createdAt: created_at,
-    uopdatedAt: updated_at
+    updatedAt: updated_at
 });
 
 const mapSongsDBToModel = ({

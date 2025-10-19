@@ -4,7 +4,7 @@ const InvariantError = require('../../exceptions/InvariantError.js');
 const NotFoundError = require('../../exceptions/NotFound.js');
 const {mapAlbumsDBToModel} = require('../../utils/index.js');
 
-class AlbumsServices {
+class AlbumsService {
     constructor() {
         this._pool = new Pool();
     }
@@ -28,20 +28,91 @@ class AlbumsServices {
         return result.rows[0].id;
     }
 
+    // async getAlbumById(id) {
+    //     const query = {
+    //         text: 'SELECT * FROM albums WHERE id = $1',
+    //         values: [id]
+    //     };
+
+    //     const result = await this._pool.query(query);
+
+    //     if (!result.rows.length) {
+    //         throw new NotFoundError('Album dengan id tersebut tidak ditemukan');
+    //     }
+
+    //     return result.rows.map(mapAlbumsDBToModel)[0];
+    // }
+
     async getAlbumById(id) {
-        const query = {
+    // Query untuk album
+        const albumQuery = {
             text: 'SELECT * FROM albums WHERE id = $1',
             values: [id]
         };
 
-        const result = await this._pool.query(query);
+        const albumResult = await this._pool.query(albumQuery);
 
-        if (!result.rows.length) {
-            throw new NotFoundError('Album dengan id tersebut tidak ditemukan');
+        if (!albumResult.rows.length) {
+            throw new NotFoundError('Album tidak ditemukan');
         }
 
-        return result.rows.map(mapAlbumsDBToModel)[0];
+        // Query untuk songs di album
+        const songsQuery = {
+            text: 'SELECT id, title, performer FROM songs WHERE "albumId" = $1',
+            values: [id]
+        };
+
+        const songsResult = await this._pool.query(songsQuery);
+
+        const album = albumResult.rows[0];
+        return {
+            id: album.id,
+            name: album.name,
+            year: album.year,
+            songs: songsResult.rows
+        };
     }
+
+    // async getAlbumById(id) {
+    //     const query = {
+    //         text: `
+    //         SELECT 
+    //             a.id AS album_id,
+    //             a.name AS album_name,
+    //             a.year AS album_year,
+    //             s.id AS song_id,
+    //             s.title AS song_title,
+    //             s.performer AS song_performer
+    //         FROM albums a
+    //         LEFT JOIN songs s ON a.id = s.album_id
+    //         WHERE a.id = $1
+    //         `,
+    //         values: [id],
+    //     };
+
+    //     const result = await this._pool.query(query);
+
+    //     if (!result.rows.length) {
+    //         throw new NotFoundError('Album tidak ditemukan');
+    //     }
+
+    //     const { album_id, album_name, album_year } = result.rows[0];
+
+    //     const songs = result.rows
+    //         .filter(r => r.song_id)
+    //         .map(r => ({
+    //         id: r.song_id,
+    //         title: r.song_title,
+    //         performer: r.song_performer,
+    //         }));
+
+    //     return {
+    //         id: album_id,
+    //         name: album_name,
+    //         year: album_year,
+    //         songs,
+    //     };
+    // }
 
     async editAlbumById(id, {name, year}) {
         const updatedAt = new Date().toISOString();
@@ -60,7 +131,7 @@ class AlbumsServices {
 
     async deleteAlbumById(id) {
         const query = {
-            text: 'DELETE FROM albums WHERE id = $1',
+            text: 'DELETE FROM albums WHERE id = $1 RETURNING id',
             values: [id]
         };
 
@@ -72,4 +143,4 @@ class AlbumsServices {
     }
 }
 
-module.exports = AlbumsServices;
+module.exports = AlbumsService;
