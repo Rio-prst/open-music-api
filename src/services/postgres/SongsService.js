@@ -2,7 +2,7 @@ const {Pool} = require('pg');
 const {nanoid} = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError.js');
 const NotFoundError = require('../../exceptions/NotFound.js');
-const {mapSongDBToModel} = require('../../utils/index.js');
+const {mapSongsDBToModel} = require('../../utils/index.js');
 
 
 class SongsService {
@@ -31,7 +31,7 @@ class SongsService {
 
     async getSongs() {
         const result = await this._pool.query('SELECT * FROM songs');
-        return result.rows.map(mapSongDBToModel);
+        return result.rows.map(mapSongsDBToModel);
     }
 
     async getSongById(id) {
@@ -46,14 +46,14 @@ class SongsService {
             throw new NotFoundError('Lagu dengan id tersebut tidak ditemukan');
         }
 
-        return result.rows.map(mapSongDBToModel)[0];
+        return result.rows.map(mapSongsDBToModel)[0];
     }
 
     async editSongById(id, {title, year, genre, performer, duration, albumId}) {
         const updatedAt = new Date().toISOString();
         
         const query = {
-            text: 'UPDATE songs SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, "albumId" = $6, updated_at = $7 WHERE id = $8 RETURNING id',
+            text: 'UPDATE songs SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, album_id = $6, updated_at = $7 WHERE id = $8 RETURNING id',
             values: [title, year, genre, performer, duration, albumId, updatedAt, id]
         };
 

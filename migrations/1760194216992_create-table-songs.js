@@ -41,11 +41,11 @@ export const up = (pgm) => {
             onDelete: 'CASCADE'
         },
         created_at: {
-            type: 'STRING',
+            type: 'TEXT',
             notNull: true
         },
         updated_at: {
-            type: 'STRING',
+            type: 'TEXT',
             notNull: true
         }
     })

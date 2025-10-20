@@ -63,6 +63,7 @@ const init = async () => {
             });
 
             newResponse.code(500);
+            console.log(newResponse);
             return newResponse;
         }
 

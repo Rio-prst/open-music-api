@@ -24,11 +24,11 @@ export const up = (pgm) => {
             notNull: true
         },
         created_at: {
-            type: 'STRING',
+            type: 'TEXT',
             notNull: true
         },
         updated_at: {
-            type: 'STRING',
+            type: 'TEXT',
             notNull: true
         }
     })

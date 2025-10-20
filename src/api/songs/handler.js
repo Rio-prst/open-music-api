@@ -27,24 +27,32 @@ class SongsHandler {
     }
 
     async getSongsHandler(request, h) {
-        const {title = '', performer = ''} = request.query;
-        await this._validator.validateSongQuery({title, performer});
-        const songs = await this._service.getSongs();
+        // const {title = '', performer = ''} = request.query;
+        // await this._validator.validateSongQuery({title, performer});
+        // const songs = await this._service.getSongs();
 
-        const filteredSongs = songs.filter((song) => {
-            const matchTitle = title ? song.title.toLowerCase().includes(title.toLowerCase()) : true;
-            const matchPerformer = performer ? song.performer.toLowerCase().includes(performer.toLowerCase()) : true;
-            return matchTitle && matchPerformer;
-        });
+        // const filteredSongs = songs.filter((song) => {
+        //     const matchTitle = title ? song.title.toLowerCase().includes(title.toLowerCase()) : true;
+        //     const matchPerformer = performer ? song.performer.toLowerCase().includes(performer.toLowerCase()) : true;
+        //     return matchTitle && matchPerformer;
+        // });
         
+        // return {
+        //     status: 'success',
+        //     data: {
+        //         songs: filteredSongs.map(({id, title, performer}) => ({
+        //             id,
+        //             title,
+        //             performer
+        //         }))
+        //     }
+        // };
+
+        const songs = await this._service.getSongs();
         return {
             status: 'success',
             data: {
-                songs: filteredSongs.map(({id, title, performer}) => ({
-                    id,
-                    title,
-                    performer
-                }))
+                songs
             }
         };
     }
@@ -64,9 +72,8 @@ class SongsHandler {
     async putSongByIdHandler(request, h) {
         this._validator.validateSongPayload(request.payload);
         const {id} = request.params;
-        const { title, year, genre, performer, duration, albumId } = request.payload;
 
-        await this._service.editSongById(id, request.payload);
+        await this._service.editSongById(id);
 
         return {
             status: 'success',

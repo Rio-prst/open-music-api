@@ -15,7 +15,7 @@ class AlbumsService {
         const updatedAt = createdAt;
         
         const query = {
-            text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5) RETURNING id',
+            text: 'INSERT INTO albums (id, name, year, created_at, updated_at) VALUES($1, $2, $3, $4, $5) RETURNING id',
             values: [id, name, year, createdAt, updatedAt]
         };
 
@@ -58,7 +58,7 @@ class AlbumsService {
 
         // Query untuk songs di album
         const songsQuery = {
-            text: 'SELECT id, title, performer FROM songs WHERE "albumId" = $1',
+            text: 'SELECT id, title, performer FROM songs WHERE "album_id" = $1',
             values: [id]
         };
 
