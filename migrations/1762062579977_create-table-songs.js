@@ -4,7 +4,7 @@
 export const shorthands = undefined;
 
 export const up = (pgm) => {
-    pgm.createTable('songs', {
+  pgm.createTable('songs', {
         id: {
             type: 'VARCHAR(50)',
             primaryKey: true
@@ -43,9 +43,9 @@ export const up = (pgm) => {
             type: 'TEXT',
             notNull: true
         }
-    })
+    });
 };
 
 export const down = (pgm) => {
-    pgm.dropTable('songs');
+  pgm.dropTable('songs');
 };
