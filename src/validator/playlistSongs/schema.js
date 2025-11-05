@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
-const PlaylistSongsPaylaodSchema = Joi.object({
+const PlaylistSongsPayloadSchema = Joi.object({
     songId: Joi.string().required(),
 });
 
-module.exports = PlaylistSongsPaylaodSchema;
+module.exports = PlaylistSongsPayloadSchema;
