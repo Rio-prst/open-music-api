@@ -6,8 +6,9 @@ const {mapSongsDBToModel} = require('../../utils/index.js');
 
 
 class SongsService {
-    constructor() {
+    constructor(cacheService) {
         this._pool = new Pool();
+        this._cacheService = cacheService;
     }
 
     async addSong({title, year, genre, performer, duration, albumId}) {
@@ -35,18 +36,32 @@ class SongsService {
     }
 
     async getSongById(id) {
-        const query = {
-            text: 'SELECT * FROM songs WHERE id = $1',
-            values: [id]
-        };
+        try {
+            const result = await this._cacheService.get(`song:${id}`);
+            const song = JSON.parse(result);
 
-        const result = await this._pool.query(query);
+            song.isCache = true;
 
-        if (!result.rows.length) {
-            throw new NotFoundError('Lagu dengan id tersebut tidak ditemukan');
+            return song;
+        } catch (error) {
+            const query = {
+                text: 'SELECT * FROM songs WHERE id = $1',
+                values: [id]
+            };
+
+            const result = await this._pool.query(query);
+
+            if (!result.rows.length) {
+                throw new NotFoundError('Lagu dengan id tersebut tidak ditemukan');
+            }
+
+            const song = result.rows.map(mapSongsDBToModel)[0];
+
+            await this._cacheService.set(`song:${id}`, JSON.stringify(song));
+
+            song.isCache = false;
+            return song;
         }
-
-        return result.rows.map(mapSongsDBToModel)[0];
     }
 
     async editSongById(id, {title, year, genre, performer, duration, albumId}) {
@@ -62,6 +77,8 @@ class SongsService {
         if (!result.rows.length) {
             throw new NotFoundError('Gagal memperbarui lagu. Id tidak ditemukan');
         }
+
+        await this._cacheService.delete(`song:${id}`);
     }
 
     async deleteSongById(id) {
@@ -75,6 +92,8 @@ class SongsService {
         if (!result.rows.length) {
             throw new NotFoundError('Gagal menghapus lagu. Id tidak ditemukan');
         }
+
+        await this._cacheService.delete(`song:${id}`);
     }
 
     async verifySongExist(songId) {

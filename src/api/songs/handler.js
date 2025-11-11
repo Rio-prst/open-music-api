@@ -53,12 +53,23 @@ class SongsHandler {
         const {id} = request.params;
         const song = await this._service.getSongById(id);
 
-        return {
+        const response = h.response({
             status: 'success',
             data: {
-                song
-            }
-        };
+                song,
+            },
+        });
+
+        response.code(200);
+
+        if (song.isCache) {
+            response.header('X-Data-Source', 'cache');
+            delete song.isCache;
+        } else {
+            delete song.isCache;
+        }
+
+        return response;
     }
 
     async putSongByIdHandler(request, h) {

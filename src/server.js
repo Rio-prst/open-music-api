@@ -34,7 +34,7 @@ const TokenManager = require('./tokenize/TokenManager.js');
 const init = async () => {
     const cacheService = new CacheService();
     const albumsService = new AlbumsService(cacheService);
-    const songsService = new SongsService();
+    const songsService = new SongsService(cacheService);
     const collaborationsService = new CollaborationsService();
     const playlistsService = new PlaylistsService(collaborationsService);
     const usersService = new UsersService();
