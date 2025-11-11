@@ -53,6 +53,7 @@ class AlbumsService {
             id: album.id,
             name: album.name,
             year: album.year,
+            coverUrl: album.cover_url || null,
             songs: songsResult.rows
         };
     }
@@ -87,7 +88,7 @@ class AlbumsService {
 
     async addAlbumCover(albumId, coverUrl) {
         const query = {
-            text: 'UPDATE albums SER cover_url = $1 WHERE id = $2 RETURNING id',
+            text: 'UPDATE albums SET cover_url = $1 WHERE id = $2 RETURNING id',
             values: [coverUrl, albumId],
         };
 
@@ -166,7 +167,6 @@ class AlbumsService {
             await this._cacheService.set(`like:${albumId}`, JSON.stringify(count));
 
             return {
-                status: 'success',
                 count,
                 isCache: false,
             };

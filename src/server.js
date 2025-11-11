@@ -39,7 +39,8 @@ const init = async () => {
     const playlistsService = new PlaylistsService(collaborationsService);
     const usersService = new UsersService();
     const authenticationsService = new AuthenticationsService();
-    const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
+    const producerService = ProducerService;
+    const storageService = new StorageService(path.resolve(__dirname, './api/albums/file/images'));
 
     const server = Hapi.server({
         port: process.env.PORT,
@@ -130,7 +131,8 @@ const init = async () => {
         {
             plugin: _exports,
             options: {
-                service: ProducerService,
+                service: producerService,
+                playlistsService,
                 validator: ExportsValidator,
             },
         },
@@ -140,7 +142,6 @@ const init = async () => {
         const { response } = request;
 
         if (response instanceof Error) {
-    
             if (response instanceof ClientError) {
                 const newResponse = h.response({
                     status: 'fail',

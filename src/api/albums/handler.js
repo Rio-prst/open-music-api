@@ -69,7 +69,7 @@ class AlbumsHandler {
         this._uploadsValidator.validateImageHeaders(cover.hapi.headers);
 
         const filename = await this._storageService.writeFile(cover, cover.hapi);
-        const coverUrl = `http://${process.env.HOST}:${process.env.PORT}/albums/cover/${filename}`;
+        const coverUrl = `http://${process.env.HOST}:${process.env.PORT}/albums/covers/${filename}`;
         await this._albumsService.addAlbumCover(albumId, coverUrl);
 
         const response = h.response({
@@ -111,16 +111,21 @@ class AlbumsHandler {
     async getLikesCountHandler(request, h) {
         const {id: albumId} = request.params;
 
-        const likes = await this._albumsService.getLikesCount(albumId);
+        const {count, isCache} = await this._albumsService.getLikesCount(albumId);
 
         const response = h.response({
             status: 'success',
             data: {
-                likes,
+                likes: count,
             },
         });
 
         response.code(200);
+        
+        if (isCache) {
+            response.header('X-Data-Source', 'cache');
+        }
+
         return response;
     }
 }
